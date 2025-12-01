@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+</head>
+<body>
+  <div class="nav">
+    <h2>My Expenses</h2>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <div class="container">
+
+    <h3>Add Expense</h3>
+    <input id="title" placeholder="Title">
+    <input id="amount" type="number" placeholder="Amount">
+    <select id="category">
+      <option>Food</option>
+      <option>Travel</option>
+      <option>Shopping</option>
+      <option>Others</option>
+    </select>
+
+    <button onclick="addExpense()">Add</button>
+
+    <h3>Your Expenses</h3>
+    <ul id="expense-list"></ul>
+
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <script src="firebase.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
