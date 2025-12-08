@@ -4,7 +4,13 @@ from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // Your Firebase Config
 const firebaseConfig = {
-  // paste your config here
+  apiKey: "AIzaSyAJPW3borgHzcbx9whky1FvrjI4qrnEvgU",
+  authDomain: "expense-tracker-web-app-6563c.firebaseapp.com",
+  projectId: "expense-tracker-web-app-6563c",
+  storageBucket: "expense-tracker-web-app-6563c.firebasestorage.app",
+  messagingSenderId: "162029716472",
+  appId: "1:162029716472:web:57e9e80fcc1355cc244c0d",
+  measurementId: "G-HT5Y21R55K"
 };
 
 // Initialize
@@ -77,3 +83,4 @@ window.deleteExpense = async function(id) {
 
 // Initial load
 loadExpenses();
+
