@@ -1,80 +1,79 @@
-// SIGNUP
-function signup() {
-  let email = document.getElementById("email").value;
-  let password = document.getElementById("password").value;
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } 
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  auth.createUserWithEmailAndPassword(email, password)
-    .then(() => {
-      alert("Account Created!");
-      window.location.href = "login.html";
-    })
-    .catch(e => alert(e.message));
-}
+// Your Firebase Config
+const firebaseConfig = {
+  // paste your config here
+};
 
-// LOGIN
-function login() {
-  let email = document.getElementById("email").value;
-  let password = document.getElementById("password").value;
+// Initialize
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-  auth.signInWithEmailAndPassword(email, password)
-    .then(() => {
-      window.location.href = "dashboard.html";
-    })
-    .catch(e => alert(e.message));
-}
+const expenseName = document.getElementById("expenseName");
+const expenseAmount = document.getElementById("expenseAmount");
+const addBtn = document.getElementById("addBtn");
+const expenseList = document.getElementById("expenseList");
+const totalAmount = document.getElementById("totalAmount");
 
-// LOGOUT
-function logout() {
-  auth.signOut().then(() => {
-    window.location.href = "login.html";
-  });
-}
 
-// FIRESTORE LISTENER
-auth.onAuthStateChanged(user => {
-  if (user && document.getElementById("expense-list")) {
+// -----------------------------
+// ADD EXPENSE
+// -----------------------------
+addBtn.addEventListener("click", async () => {
+    const name = expenseName.value;
+    const amount = Number(expenseAmount.value);
+
+    if (name === "" || amount === 0) {
+        alert("Enter all fields");
+        return;
+    }
+
+    await addDoc(collection(db, "expenses"), {
+        name: name,
+        amount: amount
+    });
+
+    expenseName.value = "";
+    expenseAmount.value = "";
+
     loadExpenses();
-  }
 });
 
-// ADD EXPENSE
-function addExpense() {
-  const user = auth.currentUser;
-  const data = {
-    title: document.getElementById("title").value,
-    amount: Number(document.getElementById("amount").value),
-    category: document.getElementById("category").value,
-    createdAt: Date.now()
-  };
 
-  db.collection("users").doc(user.uid).collection("expenses")
-    .add(data);
-}
-
+// -----------------------------
 // LOAD EXPENSES
-function loadExpenses() {
-  const user = auth.currentUser;
+// -----------------------------
+async function loadExpenses() {
+    const querySnapshot = await getDocs(collection(db, "expenses"));
+    
+    expenseList.innerHTML = "";
+    let total = 0;
 
-  db.collection("users").doc(user.uid).collection("expenses")
-    .orderBy("createdAt", "desc")
-    .onSnapshot(snapshot => {
-      let list = "";
-      snapshot.forEach(doc => {
-        let e = doc.data();
-        list += `
-          <li>
-            ${e.title} - ₹${e.amount} (${e.category})
-            <button onclick="deleteExpense('${doc.id}')">X</button>
-          </li>
+    querySnapshot.forEach((docItem) => {
+        const data = docItem.data();
+
+        // Add to list
+        const li = document.createElement("li");
+        li.innerHTML = `
+            ${data.name} - ₹${data.amount}
+            <button onclick="deleteExpense('${docItem.id}')">Delete</button>
         `;
-      });
-      document.getElementById("expense-list").innerHTML = list;
+        expenseList.appendChild(li);
+
+        // Add to total
+        total += data.amount;
     });
+
+    totalAmount.innerText = total;
 }
 
-// DELETE
-function deleteExpense(id) {
-  const user = auth.currentUser;
-  db.collection("users").doc(user.uid)
-    .collection("expenses").doc(id).delete();
-}
+// Make delete function global
+window.deleteExpense = async function(id) {
+    await deleteDoc(doc(db, "expenses", id));
+    loadExpenses();
+};
+
+// Initial load
+loadExpenses();
